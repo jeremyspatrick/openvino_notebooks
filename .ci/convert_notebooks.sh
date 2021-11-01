@@ -11,7 +11,7 @@ mkdir -p $markdowndir
 # List all notebooks that contain binder buttons based on readme
 cat README.md | grep mybinder.org | awk -e '/[0-9]{3}/' | cut -f1 -d] | cut -f2 -d[ > $binderlist
 
-git ls-files "*.ipynb" | while read notebook; do
+git ls-files "*.ipynb" | grep -v 310 | while read notebook; do
     executed_notebook=${notebook/.ipynb/-with-output.ipynb}
     echo $executed_notebook
     jupyter nbconvert --execute --to notebook --output $executed_notebook --output-dir . --ExecutePreprocessor.kernel_name="python3" $notebook 
