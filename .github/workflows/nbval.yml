@@ -51,6 +51,7 @@ jobs:
           ~/.paddlehub
           ~/open_model_zoo_cache
           ~/**/kits19_frames_1
+          notebooks/310-pytorch-monai-training/kits19
         key: cache-files
     - name: Checkout repository
       uses: actions/checkout@v2
@@ -58,6 +59,16 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python }}
+    - name: Download files
+      run: |
+        cd notebooks/310-pytorch-monai-training
+        curl -O https://s3.us-west-1.amazonaws.com/openvino.notebooks/case_00016.zip
+        unzip case_00016.zip
+        mkdir kits19
+        mkdir kits19/data
+        mkdir kits19/data/kits19_frames
+        mv case_00016 kits19/data/kits19_frames
+        cp -r kits19/data/kits19_frames/case_00016 kits19/data/kits19_frames/case_00002
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -83,7 +94,7 @@ jobs:
         jupyter lab notebooks --help
     - name: Analysing with nbval
       run: |
-        python -m pytest --nbval -x -k "test_ or notebook_utils" --durations 10 --ignore 310-pytorch-monai-training
+        python -m pytest --nbval -x -k "test_310 or notebook_utils" --durations 10
     - name: Cache openvino pip files
       run: |
         pip cache purge # Cache only openvino files, not other dependencies
